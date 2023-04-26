@@ -1,6 +1,6 @@
 # GamesCLI
 
-CLI to play games in the terminal.
+CLI for playing games including Wordle.
 
 ## Installation
 
