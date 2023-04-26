@@ -1,6 +1,6 @@
 # games_cli
 
-CLI to play games in the terminal.
+CLI for playing games including Wordle.
 
 ```bash
 mix release
