@@ -1,13 +1,18 @@
 defmodule Games.Wordle do
   @moduledoc """
   This is a word guessing game. The player is given a word and must guess the word by entering a word with the same
-  length. The player has 5 lives and loses a life for each incorrect guess. The player wins if they guess the word
+  length. The player has 6 lives and loses a life for each incorrect guess. The player wins if they guess the word
   correctly before they run out of lives.
   """
   import Games.Utils
 
   @words "priv/words.txt"
   @guesses "priv/guesses.txt"
+  @colour_map %{
+    green: :green_background,
+    yellow: :yellow_background,
+    gray: :light_black_background
+  }
 
   @doc """
   Returns a list of words from the given file path.
@@ -24,7 +29,7 @@ defmodule Games.Wordle do
   def play(opts \\ []) do
     word = Keyword.get(opts, :word, Enum.random(get_text(@words)))
     guess_list = Keyword.get(opts, :guess_list, get_text(@guesses))
-    lives = Keyword.get(opts, :lives, 5)
+    lives = Keyword.get(opts, :lives, 6)
 
     if !opts[:word] do
       IO.puts("Welcome to Wordle")
@@ -46,11 +51,21 @@ defmodule Games.Wordle do
           IO.puts("You lose! The word was #{word}")
 
         true ->
-          IO.puts(Enum.join(feedback(word, guess), " "))
+          feedback = feedback(word, guess)
+
+          ansi_out =
+            Enum.zip_reduce(feedback, to_charlist(guess), [], fn f, g, acc ->
+              acc ++ [Map.get(@colour_map, f), g]
+            end) ++ [:reset]
+
+          IO.puts(IO.ANSI.format(ansi_out))
           play(word: word, guess_list: guess_list, lives: lives - 1)
       end
     end
   end
+
+  # def format_feedback(word, feedback) do
+  # end
 
   @doc """
   Calculates the feedback for a guess.
